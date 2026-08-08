@@ -237,7 +237,7 @@ export const ChallanModule: React.FC<ChallanModuleProps> = ({
                     </td>
                     <td className="p-4 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        {c.status === 'Draft' && (
+                        {c.status === 'Draft' && canCreate && (
                           <button
                             onClick={() => handleUpdateStatus(c.id, 'Confirmed')}
                             className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition-colors flex items-center gap-1 shadow-sm"
