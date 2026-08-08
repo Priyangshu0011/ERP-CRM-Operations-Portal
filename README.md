@@ -17,8 +17,6 @@ Password for all pre-seeded accounts is **`password123`**:
 | 📦 **Warehouse** | `warehouse@erp.com` | Manage Product Catalog, Stock IN/OUT Adjustments, View Stock Logs |
 | 💳 **Accounts** | `accounts@erp.com` | View Sales Orders & Invoices, Customer Billing Data, Print Tax Invoices |
 
-*Note: The frontend UI features a **"Quick Role Evaluator"** top banner allowing instant 1-click evaluation between roles without re-typing passwords.*
-
 ---
 
 ## 🚀 Key Features & Business Logic Implementation
