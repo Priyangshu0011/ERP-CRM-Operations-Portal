@@ -148,11 +148,36 @@ Import `postman_collection.json` into Postman to test all endpoints.
 
 ---
 
-## 🌐 Deployment Instructions (Free Hosting Platforms)
+## 🌐 Step-by-Step Deployment Guide (Vercel + Render)
 
-- **Frontend**: Deploy on **Vercel** or **Render Static Site**. Set `VITE_API_URL` environment variable.
-- **Backend**: Deploy on **Render Web Service** or **Railway**. Set environment variables: `PORT=5000`, `JWT_SECRET=your_jwt_secret`, `DATABASE_URL=your_postgres_url`.
-- **Database**: Free Managed PostgreSQL on **Neon.tech** or **Supabase**. Paste the connection string into `DATABASE_URL`.
+### 1. Deploy Backend on Render (Free Web Service)
+1. Log in to [Render.com](https://render.com) and click **New +** -> **Web Service**.
+2. Connect your GitHub repository (`Priyangshu0011/ERP-CRM-Operations-Portal`).
+3. Configure the following settings:
+   - **Name**: `mini-erp-backend`
+   - **Root Directory**: `backend`
+   - **Environment**: `Node`
+   - **Build Command**: `npm install && npx prisma generate && npm run build`
+   - **Start Command**: `npx prisma db push && npm run prisma:seed && npm start`
+4. Add Environment Variables:
+   - `NODE_ENV`: `production`
+   - `JWT_SECRET`: `supersecret_jwt_key_erp_crm_2026`
+   - `DATABASE_URL`: `file:./dev.db` *(or your Neon PostgreSQL URL)*
+5. Click **Create Web Service**. Render will build and deploy your API (e.g. `https://mini-erp-backend.onrender.com`).
+
+---
+
+### 2. Deploy Frontend on Vercel (Free Static Hosting)
+1. Log in to [Vercel.com](https://vercel.com) and click **Add New Project**.
+2. Import repository `Priyangshu0011/ERP-CRM-Operations-Portal`.
+3. Configure project settings:
+   - **Root Directory**: Select `frontend`
+   - **Framework Preset**: `Vite`
+   - **Build Command**: `npm run build`
+   - **Output Directory**: `dist`
+4. Add Environment Variable:
+   - **`VITE_API_URL`**: `https://mini-erp-backend.onrender.com/api` *(Your Render backend URL + `/api`)*
+5. Click **Deploy**. Vercel will build and publish your live frontend URL!
 
 ---
 
