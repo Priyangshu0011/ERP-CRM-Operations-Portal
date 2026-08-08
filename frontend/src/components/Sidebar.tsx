@@ -6,82 +6,87 @@ export type TabType = 'dashboard' | 'customers' | 'inventory' | 'challans';
 interface SidebarProps {
   activeTab: TabType;
   setActiveTab: (tab: TabType) => void;
-  lowStockCount?: number;
-  pendingChallanCount?: number;
+  lowStockCount: number;
+  pendingChallanCount: number;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
   activeTab,
   setActiveTab,
-  lowStockCount = 0,
-  pendingChallanCount = 0,
+  lowStockCount,
+  pendingChallanCount,
 }) => {
-  const navItems = [
+  const menuItems = [
     {
       id: 'dashboard' as TabType,
-      label: 'Dashboard',
+      label: 'Dashboard Overview',
       icon: LayoutDashboard,
-      badge: null,
     },
     {
       id: 'customers' as TabType,
       label: 'Customer CRM',
       icon: Users,
-      badge: null,
     },
     {
       id: 'inventory' as TabType,
       label: 'Products & Stock',
       icon: Package,
-      badge: lowStockCount > 0 ? `${lowStockCount} Low` : null,
-      badgeColor: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
+      badge: lowStockCount > 0 ? `${lowStockCount} Low` : undefined,
+      badgeColor: 'bg-amber-100 text-amber-800 border-amber-200',
     },
     {
       id: 'challans' as TabType,
       label: 'Sales Challans',
       icon: FileText,
-      badge: pendingChallanCount > 0 ? `${pendingChallanCount} Draft` : null,
-      badgeColor: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
+      badge: pendingChallanCount > 0 ? `${pendingChallanCount} Draft` : undefined,
+      badgeColor: 'bg-indigo-100 text-indigo-800 border-indigo-200',
     },
   ];
 
   return (
-    <aside className="w-full md:w-64 bg-slate-900/60 border-b md:border-b-0 md:border-r border-slate-800 p-4 shrink-0">
-      <nav className="flex md:flex-col gap-1 overflow-x-auto md:overflow-x-visible">
-        {navItems.map((item) => {
+    <aside className="w-full md:w-64 bg-white border-r border-slate-200 p-4 space-y-6 flex-shrink-0">
+      <div className="space-y-1">
+        <div className="px-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">
+          Main Navigation
+        </div>
+        {menuItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
           return (
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
-              className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl font-medium text-sm transition-all whitespace-nowrap ${
+              className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-semibold text-xs transition-all ${
                 isActive
-                  ? 'bg-blue-600/15 text-blue-400 border border-blue-500/30 shadow-md shadow-blue-500/5 font-semibold'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 border border-transparent'
+                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
+                  : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
               }`}
             >
               <div className="flex items-center gap-3">
-                <Icon className={`w-5 h-5 ${isActive ? 'text-blue-400' : 'text-slate-500'}`} />
+                <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-400'}`} />
                 <span>{item.label}</span>
               </div>
               {item.badge && (
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${item.badgeColor}`}>
+                <span
+                  className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold border ${
+                    isActive ? 'bg-white/20 text-white border-white/30' : item.badgeColor
+                  }`}
+                >
                   {item.badge}
                 </span>
               )}
             </button>
           );
         })}
-      </nav>
+      </div>
 
-      <div className="hidden md:block mt-8 p-4 rounded-xl bg-gradient-to-b from-slate-800/40 to-slate-950/60 border border-slate-800/80">
-        <div className="flex items-center gap-2 text-xs font-semibold text-slate-300 mb-1">
-          <Activity className="w-4 h-4 text-emerald-400" />
-          <span>System Status</span>
+      <div className="p-4 bg-gradient-to-br from-slate-50 to-indigo-50/40 rounded-2xl border border-slate-200/80 space-y-2">
+        <div className="flex items-center gap-2 text-indigo-700 font-bold text-xs">
+          <Activity className="w-4 h-4 text-indigo-600" />
+          <span>Real-time Operations</span>
         </div>
-        <p className="text-[11px] text-slate-400 leading-relaxed">
-          Wholesale Distribution System operational. REST APIs active with full JWT & stock lock validation.
+        <p className="text-[11px] text-slate-500 leading-relaxed">
+          Wholesale Distribution System operational with RBAC security & stock audit logging.
         </p>
       </div>
     </aside>

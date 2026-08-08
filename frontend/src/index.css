@@ -1,32 +1,14 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
 
 @layer base {
   body {
-    @apply bg-slate-950 text-slate-100 min-h-screen;
+    @apply bg-slate-50 text-slate-800 antialiased font-sans selection:bg-indigo-500 selection:text-white;
   }
 }
 
-/* Custom Scrollbars */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: #0f172a;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #334155;
-  border-radius: 9999px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #475569;
-}
-
+/* Custom Print Styles for Invoice Modal */
 @media print {
   body * {
     visibility: hidden;
@@ -39,7 +21,5 @@
     left: 0;
     top: 0;
     width: 100%;
-    background: white !important;
-    color: black !important;
   }
 }
