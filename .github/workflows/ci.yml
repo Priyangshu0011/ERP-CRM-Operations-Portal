@@ -19,9 +19,13 @@ jobs:
           cache-dependency-path: backend/package-lock.json
 
       - name: Install & Build Backend
+        env:
+          DATABASE_URL: "file:./dev.db"
+          JWT_SECRET: "ci_jwt_secret_key_erp_2026"
         run: |
           cd backend
-          npm ci
+          npm install
+          npx prisma generate
           npx prisma db push
           npm run build
 
@@ -37,7 +41,9 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
 
       - name: Install & Build Frontend
+        env:
+          VITE_API_URL: "https://mini-erp-backend-sb2u.onrender.com/api"
         run: |
           cd frontend
-          npm ci
+          npm install
           npm run build
