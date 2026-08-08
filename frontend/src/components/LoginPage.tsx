@@ -21,17 +21,11 @@ export const LoginPage: React.FC = () => {
       setError(
         err.response?.data?.message ||
         err.response?.data?.error ||
-        'Invalid credentials. Please verify your email and password.'
+        'Invalid credentials. Please verify your business email and password.'
       );
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleQuickFill = (demoEmail: string) => {
-    setEmail(demoEmail);
-    setPassword('password123');
-    setError('');
   };
 
   return (
@@ -133,50 +127,13 @@ export const LoginPage: React.FC = () => {
             </button>
           </form>
 
-          {/* Quick Select Demo Credentials (Formal Style) */}
-          <div className="pt-4 border-t border-slate-100 space-y-2.5">
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
-              Sample Role Demo Accounts:
-            </span>
-            <div className="grid grid-cols-2 gap-2 text-[11px]">
-              <button
-                type="button"
-                onClick={() => handleQuickFill('admin@erp.com')}
-                className="p-2 rounded-xl bg-slate-50 hover:bg-indigo-50 hover:text-indigo-700 border border-slate-200 text-left font-semibold text-slate-700 transition-colors"
-              >
-                <div className="text-slate-900 font-bold">Admin Role</div>
-                <div className="text-[10px] text-slate-400 font-mono">admin@erp.com</div>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleQuickFill('sales@erp.com')}
-                className="p-2 rounded-xl bg-slate-50 hover:bg-indigo-50 hover:text-indigo-700 border border-slate-200 text-left font-semibold text-slate-700 transition-colors"
-              >
-                <div className="text-slate-900 font-bold">Sales Role</div>
-                <div className="text-[10px] text-slate-400 font-mono">sales@erp.com</div>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleQuickFill('warehouse@erp.com')}
-                className="p-2 rounded-xl bg-slate-50 hover:bg-indigo-50 hover:text-indigo-700 border border-slate-200 text-left font-semibold text-slate-700 transition-colors"
-              >
-                <div className="text-slate-900 font-bold">Warehouse Role</div>
-                <div className="text-[10px] text-slate-400 font-mono">warehouse@erp.com</div>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleQuickFill('accounts@erp.com')}
-                className="p-2 rounded-xl bg-slate-50 hover:bg-indigo-50 hover:text-indigo-700 border border-slate-200 text-left font-semibold text-slate-700 transition-colors"
-              >
-                <div className="text-slate-900 font-bold">Accounts Role</div>
-                <div className="text-[10px] text-slate-400 font-mono">accounts@erp.com</div>
-              </button>
-            </div>
-            <p className="text-[10px] text-slate-400 text-center font-mono pt-1">
-              Default password for demo: <span className="font-bold text-slate-600">password123</span>
+          {/* Corporate Security Footer */}
+          <div className="pt-4 border-t border-slate-100 text-center space-y-1">
+            <p className="text-[11px] font-semibold text-slate-500">
+              Protected Enterprise Gateway
+            </p>
+            <p className="text-[10px] text-slate-400">
+              Authorized employee access only. For login assistance or account provisioning, please contact your System Administrator.
             </p>
           </div>
         </div>
