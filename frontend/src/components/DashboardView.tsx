@@ -3,17 +3,17 @@ import { Customer, Product, SalesChallan, StockLog } from '../types';
 import {
   TrendingUp,
   Users,
-  Package,
   AlertTriangle,
   FileCheck2,
   ArrowUpRight,
-  ArrowDownRight,
   Plus,
   Clock,
   ChevronRight,
   ShieldAlert,
+  Package,
 } from 'lucide-react';
 import { TabType } from './Sidebar';
+import { useAuth } from '../context/AuthContext';
 
 interface DashboardViewProps {
   customers: Customer[];
@@ -34,6 +34,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   onOpenNewCustomer,
   onOpenNewChallan,
 }) => {
+  const { user } = useAuth();
+  const role = user?.role || 'ADMIN';
+
   // Aggregate Metrics
   const totalRevenue = challans
     .filter((c) => c.status === 'Confirmed')
@@ -43,43 +46,81 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   const lowStockProducts = products.filter((p) => p.currentStock <= p.minStockAlert);
   const pendingChallans = challans.filter((c) => c.status === 'Draft');
 
+  const canSalesAction = role === 'ADMIN' || role === 'SALES';
+  const canWarehouseAction = role === 'ADMIN' || role === 'WAREHOUSE';
+
   return (
     <div className="space-y-6">
       {/* Welcome Banner */}
       <div className="bg-gradient-to-r from-indigo-600 via-indigo-700 to-blue-600 rounded-3xl p-6 sm:p-8 text-white shadow-xl shadow-indigo-600/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 relative overflow-hidden">
         <div className="relative z-10 space-y-2 max-w-xl">
-          <span className="px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-[10px] font-bold uppercase tracking-wider text-indigo-100 border border-white/20">
-            Enterprise Management Center
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-[10px] font-bold uppercase tracking-wider text-indigo-100 border border-white/20">
+              Enterprise Operations Center
+            </span>
+            <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-200 border border-emerald-400/30 text-[10px] font-extrabold uppercase">
+              {role} Scope
+            </span>
+          </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-            Wholesale Operations & CRM Overview
+            {role === 'ADMIN' && 'System Admin & Operations Center'}
+            {role === 'SALES' && 'Wholesale Sales & CRM Desk'}
+            {role === 'WAREHOUSE' && 'Warehouse & Inventory Control'}
+            {role === 'ACCOUNTS' && 'Financial Sales Audit & Billing'}
           </h1>
           <p className="text-xs sm:text-sm text-indigo-100/90 leading-relaxed">
-            Monitor real-time inventory levels, manage customer CRM follow-ups, and process sales challans with atomic stock validation.
+            {role === 'ADMIN' && 'Real-time overview of inventory stock levels, CRM follow-ups, and sales challans with RBAC privilege enforcement.'}
+            {role === 'SALES' && 'Track lead conversions, log sales call follow-ups, and generate sales orders with stock availability checks.'}
+            {role === 'WAREHOUSE' && 'Monitor product catalog, low stock reorder thresholds, and record stock IN/OUT audit movement logs.'}
+            {role === 'ACCOUNTS' && 'Audit confirmed sales orders, customer billing accounts, and print formal tax invoices.'}
           </p>
         </div>
 
         <div className="flex items-center gap-3 relative z-10 self-start sm:self-auto">
-          <button
-            onClick={onOpenNewChallan}
-            className="px-4 py-2.5 bg-white text-indigo-700 hover:bg-slate-50 font-bold text-xs rounded-xl shadow-lg transition-all flex items-center gap-2"
-          >
-            <Plus className="w-4 h-4 text-indigo-600" />
-            <span>New Sales Order</span>
-          </button>
-          <button
-            onClick={onOpenNewCustomer}
-            className="px-4 py-2.5 bg-indigo-500/30 hover:bg-indigo-500/40 text-white font-semibold text-xs rounded-xl border border-white/20 transition-all flex items-center gap-2"
-          >
-            <Users className="w-4 h-4" />
-            <span>Add Customer</span>
-          </button>
+          {canSalesAction && (
+            <>
+              <button
+                onClick={onOpenNewChallan}
+                className="px-4 py-2.5 bg-white text-indigo-700 hover:bg-slate-50 font-bold text-xs rounded-xl shadow-lg transition-all flex items-center gap-2"
+              >
+                <Plus className="w-4 h-4 text-indigo-600" />
+                <span>New Sales Order</span>
+              </button>
+              <button
+                onClick={onOpenNewCustomer}
+                className="px-4 py-2.5 bg-indigo-500/30 hover:bg-indigo-500/40 text-white font-semibold text-xs rounded-xl border border-white/20 transition-all flex items-center gap-2"
+              >
+                <Users className="w-4 h-4" />
+                <span>Add Customer</span>
+              </button>
+            </>
+          )}
+
+          {canWarehouseAction && !canSalesAction && (
+            <button
+              onClick={() => setActiveTab('inventory')}
+              className="px-4 py-2.5 bg-white text-indigo-700 hover:bg-slate-50 font-bold text-xs rounded-xl shadow-lg transition-all flex items-center gap-2"
+            >
+              <Package className="w-4 h-4 text-indigo-600" />
+              <span>Manage Products & Stock</span>
+            </button>
+          )}
+
+          {role === 'ACCOUNTS' && (
+            <button
+              onClick={() => setActiveTab('challans')}
+              className="px-4 py-2.5 bg-white text-indigo-700 hover:bg-slate-50 font-bold text-xs rounded-xl shadow-lg transition-all flex items-center gap-2"
+            >
+              <FileCheck2 className="w-4 h-4 text-indigo-600" />
+              <span>Audit Sales Challans</span>
+            </button>
+          )}
         </div>
       </div>
 
       {/* KPI Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Total Revenue */}
+        {/* Total Revenue (Visible to Admin, Sales, Accounts) */}
         <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-slate-500">Confirmed Sales Revenue</span>
@@ -168,13 +209,15 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               <ShieldAlert className="w-5 h-5 text-amber-500" />
               <h2 className="font-bold text-slate-900 text-sm">Low Stock Inventory Warnings</h2>
             </div>
-            <button
-              onClick={() => setActiveTab('inventory')}
-              className="text-xs font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-1"
-            >
-              <span>View Inventory</span>
-              <ChevronRight className="w-4 h-4" />
-            </button>
+            {canWarehouseAction && (
+              <button
+                onClick={() => setActiveTab('inventory')}
+                className="text-xs font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-1"
+              >
+                <span>View Inventory</span>
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            )}
           </div>
 
           {lowStockProducts.length === 0 ? (
@@ -221,12 +264,14 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               <Clock className="w-5 h-5 text-indigo-600" />
               <h2 className="font-bold text-slate-900 text-sm">Recent Stock Activity</h2>
             </div>
-            <button
-              onClick={() => setActiveTab('inventory')}
-              className="text-xs font-bold text-indigo-600 hover:text-indigo-700"
-            >
-              All Logs
-            </button>
+            {canWarehouseAction && (
+              <button
+                onClick={() => setActiveTab('inventory')}
+                className="text-xs font-bold text-indigo-600 hover:text-indigo-700"
+              >
+                All Logs
+              </button>
+            )}
           </div>
 
           <div className="space-y-3">

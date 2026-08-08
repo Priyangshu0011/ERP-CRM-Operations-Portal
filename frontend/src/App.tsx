@@ -43,16 +43,22 @@ const MainAppContent: React.FC = () => {
   const [openChallanModal, setOpenChallanModal] = useState(false);
 
   const fetchAllData = async () => {
-    if (!isAuthenticated) return;
+    if (!isAuthenticated || !user) return;
     setIsDataLoading(true);
     setDataError('');
 
+    const role = user.role;
     try {
+      const canFetchCustomers = role === 'ADMIN' || role === 'SALES';
+      const canFetchProducts = true;
+      const canFetchChallans = role === 'ADMIN' || role === 'SALES' || role === 'ACCOUNTS';
+      const canFetchLogs = role === 'ADMIN' || role === 'WAREHOUSE' || role === 'ACCOUNTS';
+
       const [custRes, prodRes, chalRes, logsRes] = await Promise.all([
-        getCustomersApi(),
-        getProductsApi(),
-        getChallansApi(),
-        getStockLogsApi(),
+        canFetchCustomers ? getCustomersApi().catch(() => ({ data: [] })) : Promise.resolve({ data: [] }),
+        canFetchProducts ? getProductsApi().catch(() => ({ data: [] })) : Promise.resolve({ data: [] }),
+        canFetchChallans ? getChallansApi().catch(() => ({ data: [] })) : Promise.resolve({ data: [] }),
+        canFetchLogs ? getStockLogsApi().catch(() => ({ data: [] })) : Promise.resolve({ data: [] }),
       ]);
 
       setCustomers(custRes.data || []);
@@ -68,16 +74,25 @@ const MainAppContent: React.FC = () => {
   };
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && user) {
+      // Ensure current active tab is permitted for the user's role
+      const role = user.role;
+      if (
+        (activeTab === 'customers' && !(role === 'ADMIN' || role === 'SALES')) ||
+        (activeTab === 'inventory' && !(role === 'ADMIN' || role === 'WAREHOUSE')) ||
+        (activeTab === 'challans' && !(role === 'ADMIN' || role === 'SALES' || role === 'ACCOUNTS'))
+      ) {
+        setActiveTab('dashboard');
+      }
       fetchAllData();
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, user?.role]);
 
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="text-center space-y-3">
-          <div className="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto" />
+          <div className="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto text-indigo-600" />
           <p className="text-xs font-bold text-slate-500">Initializing NexusERP System...</p>
         </div>
       </div>
@@ -139,7 +154,7 @@ const MainAppContent: React.FC = () => {
             />
           )}
 
-          {activeTab === 'customers' && (
+          {activeTab === 'customers' && (user.role === 'ADMIN' || user.role === 'SALES') && (
             <CustomerModule
               customers={customers}
               onAddCustomer={async (data) => {
@@ -157,7 +172,7 @@ const MainAppContent: React.FC = () => {
             />
           )}
 
-          {activeTab === 'inventory' && (
+          {activeTab === 'inventory' && (user.role === 'ADMIN' || user.role === 'WAREHOUSE') && (
             <InventoryModule
               products={products}
               stockLogs={stockLogs}
@@ -176,7 +191,7 @@ const MainAppContent: React.FC = () => {
             />
           )}
 
-          {activeTab === 'challans' && (
+          {activeTab === 'challans' && (user.role === 'ADMIN' || user.role === 'SALES' || user.role === 'ACCOUNTS') && (
             <ChallanModule
               challans={challans}
               customers={customers}

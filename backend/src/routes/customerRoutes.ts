@@ -12,10 +12,11 @@ const router = Router();
 
 router.use(authenticateJWT);
 
-router.get('/', requireRole(['ADMIN', 'SALES', 'ACCOUNTS', 'WAREHOUSE']), getCustomers);
-router.get('/:id', requireRole(['ADMIN', 'SALES', 'ACCOUNTS', 'WAREHOUSE']), getCustomerById);
+// Customer CRM is accessible to ADMIN and SALES
+router.get('/', requireRole(['ADMIN', 'SALES']), getCustomers);
+router.get('/:id', requireRole(['ADMIN', 'SALES']), getCustomerById);
 router.post('/', requireRole(['ADMIN', 'SALES']), createCustomer);
 router.put('/:id', requireRole(['ADMIN', 'SALES']), updateCustomer);
-router.post('/:id/notes', requireRole(['ADMIN', 'SALES', 'ACCOUNTS']), addFollowUpNote);
+router.post('/:id/notes', requireRole(['ADMIN', 'SALES']), addFollowUpNote);
 
 export default router;
