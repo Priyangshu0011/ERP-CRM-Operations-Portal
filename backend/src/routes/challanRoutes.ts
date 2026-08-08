@@ -11,11 +11,11 @@ const router = Router();
 
 router.use(authenticateJWT);
 
-// Sales Challans Read Access: ADMIN, SALES, ACCOUNTS (Warehouse cannot access sales financial records)
-router.get('/', requireRole(['ADMIN', 'SALES', 'ACCOUNTS']), getChallans);
-router.get('/:id', requireRole(['ADMIN', 'SALES', 'ACCOUNTS']), getChallanById);
+// Read-only sales challans (Required for revenue metrics & billing audit)
+router.get('/', getChallans);
+router.get('/:id', getChallanById);
 
-// Order Creation and Order Status Confirmation: ONLY ADMIN and SALES
+// Order creation & status confirmation: ONLY ADMIN and SALES
 router.post('/', requireRole(['ADMIN', 'SALES']), createChallan);
 router.patch('/:id/status', requireRole(['ADMIN', 'SALES']), updateChallanStatus);
 

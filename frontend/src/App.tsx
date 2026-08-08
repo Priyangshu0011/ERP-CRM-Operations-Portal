@@ -47,18 +47,25 @@ const MainAppContent: React.FC = () => {
     setIsDataLoading(true);
     setDataError('');
 
-    const role = user.role;
     try {
-      const canFetchCustomers = role === 'ADMIN' || role === 'SALES';
-      const canFetchProducts = true;
-      const canFetchChallans = role === 'ADMIN' || role === 'SALES' || role === 'ACCOUNTS';
-      const canFetchLogs = role === 'ADMIN' || role === 'WAREHOUSE' || role === 'ACCOUNTS';
-
+      // Safe parallel fetching with per-request error catching to prevent red error banner on dashboard
       const [custRes, prodRes, chalRes, logsRes] = await Promise.all([
-        canFetchCustomers ? getCustomersApi().catch(() => ({ data: [] })) : Promise.resolve({ data: [] }),
-        canFetchProducts ? getProductsApi().catch(() => ({ data: [] })) : Promise.resolve({ data: [] }),
-        canFetchChallans ? getChallansApi().catch(() => ({ data: [] })) : Promise.resolve({ data: [] }),
-        canFetchLogs ? getStockLogsApi().catch(() => ({ data: [] })) : Promise.resolve({ data: [] }),
+        getCustomersApi().catch((err) => {
+          console.warn('Customer fetch warning:', err);
+          return { data: [] };
+        }),
+        getProductsApi().catch((err) => {
+          console.warn('Product fetch warning:', err);
+          return { data: [] };
+        }),
+        getChallansApi().catch((err) => {
+          console.warn('Challan fetch warning:', err);
+          return { data: [] };
+        }),
+        getStockLogsApi().catch((err) => {
+          console.warn('Stock logs fetch warning:', err);
+          return { data: [] };
+        }),
       ]);
 
       setCustomers(custRes.data || []);
@@ -75,7 +82,7 @@ const MainAppContent: React.FC = () => {
 
   useEffect(() => {
     if (isAuthenticated && user) {
-      // Ensure current active tab is permitted for the user's role
+      // Ensure activeTab is permitted for current user role
       const role = user.role;
       if (
         (activeTab === 'customers' && !(role === 'ADMIN' || role === 'SALES')) ||

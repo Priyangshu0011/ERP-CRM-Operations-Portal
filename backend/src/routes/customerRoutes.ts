@@ -12,9 +12,11 @@ const router = Router();
 
 router.use(authenticateJWT);
 
-// Customer CRM is accessible to ADMIN and SALES
-router.get('/', requireRole(['ADMIN', 'SALES']), getCustomers);
-router.get('/:id', requireRole(['ADMIN', 'SALES']), getCustomerById);
+// Read-only customer data (Required by all roles for dropdowns and dashboard counters)
+router.get('/', getCustomers);
+router.get('/:id', getCustomerById);
+
+// Write/Mutate customer CRM data: ONLY ADMIN and SALES
 router.post('/', requireRole(['ADMIN', 'SALES']), createCustomer);
 router.put('/:id', requireRole(['ADMIN', 'SALES']), updateCustomer);
 router.post('/:id/notes', requireRole(['ADMIN', 'SALES']), addFollowUpNote);
